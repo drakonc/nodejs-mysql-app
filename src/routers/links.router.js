@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
-
+const { isLoggedIN } = require('../lib/auth')
 const pool = require("../database");
 
-router.get("/", async (req, res) => {
+router.get("/", isLoggedIN, async (req, res) => {
   const links = await pool.query("SELECT * FROM links");
   console.log(links);
   res.render("links/list", { links });
 });
 
-router.get("/add", (req, res) => {
+router.get("/add", isLoggedIN, (req, res) => {
   res.render("links/add");
 });
 
@@ -23,7 +23,7 @@ router.post("/add", async (req, res) => {
   res.redirect("/links");
 });
 
-router.get("/delete/:id", async (req, res) => {
+router.get("/delete/:id", isLoggedIN, async (req, res) => {
   const { id } = req.params;
   console.log(id);
   const respuesta = await pool.query("DELETE FROM links WHERE id = ?", [id]);
@@ -32,7 +32,7 @@ router.get("/delete/:id", async (req, res) => {
   res.redirect("/links");
 });
 
-router.get("/edit/:id", async (req, res) => {
+router.get("/edit/:id", isLoggedIN, async (req, res) => {
   const { id } = req.params;
   console.log(id);
   const link = await pool.query("SELECT * FROM links WHERE id = ?", [id]);
